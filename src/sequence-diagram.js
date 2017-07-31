@@ -4,7 +4,6 @@
  *  Simplified BSD license.
  */
 var Raphael = require('raphael');
-require('../fonts/daniel/daniel_700.font');
 var Diagram = require('./diagram');
 var _ = require('lodash');
 
@@ -42,7 +41,7 @@ var _ = require('lodash');
 	var ARROWTYPE = Diagram.ARROWTYPE;
 
 	var LINE = {
-		'stroke': '#000',
+		'stroke': '#93B6C7',
 		'stroke-width': 2
 	};
 
@@ -131,27 +130,6 @@ var _ = require('lodash');
 		p.remove();
 
 		return bb;
-	};
-
-	/**
-	 * Draws a wobbly (hand drawn) rect
-	 */
-	Raphael.fn.handRect = function (x, y, w, h) {
-		assert(_.every([x, y, w, h], _.isFinite), "x, y, w, h must be numeric");
-		return this.path("M" + x + "," + y +
-			this.wobble(x, y, x + w, y) +
-			this.wobble(x + w, y, x + w, y + h) +
-			this.wobble(x + w, y + h, x, y + h) +
-			this.wobble(x, y + h, x, y))
-			.attr(RECT);
-	};
-
-	/**
-	 * Draws a wobbly (hand drawn) line
-	 */
-	Raphael.fn.handLine = function (x1, y1, x2, y2) {
-		assert(_.every([x1,x2,y1,y2], _.isFinite), "x1,x2,y1,y2 must be numeric");
-		return this.path("M" + x1 + "," + y1 + this.wobble(x1, y1, x2, y2));
 	};
 
 	/**
@@ -536,10 +514,6 @@ var _ = require('lodash');
 				t = paper.text(x, y, text);
 				t.attr(f);
 			}
-			// draw a rect behind it
-			var bb = t.getBBox();
-			var r = paper.rect(bb.x, bb.y, bb.width, bb.height);
-			r.attr({'fill': "#fff", 'stroke': 'none'});
 
 			t.toFront();
 		},
@@ -587,48 +561,19 @@ var _ = require('lodash');
 		init_font : function() {
 			this._font = {
 				'font-size': 16,
-				'font-family': 'Andale Mono, monospace'
+				'font-family': 'Consolas, monospace'
 			};
 		}
 
-	});
-
-/******************
- * HandRaphaelTheme
- ******************/
-
-	var HandRaphaelTheme = function(diagram) {
-		this.init(diagram);
-	};
-
-	// Take the standard RaphaelTheme and make all the lines wobbly
-	_.extend(HandRaphaelTheme.prototype, BaseTheme.prototype, {
-		init_font : function() {
-			this._font = {
-				'font-size': 16,
-				'font-family': 'daniel'
-			};
-
-			this._font._obj = this._paper.getFont('daniel');
-		},
-
-		draw_line : function(x1, y1, x2, y2) {
-			return this._paper.handLine(x1, y1, x2, y2);
-		},
-
-		draw_rect : function(x, y, w, h) {
-			return this._paper.handRect(x, y, w, h);
-		}
 	});
 
 	var themes = {
 		simple : RaphaelTheme,
-		hand  : HandRaphaelTheme
 	};
 
 	Diagram.prototype.drawSVG = function (container, options) {
 		var default_options = {
-			theme: 'hand'
+			theme: 'simple'
 		};
 
 		options = _.defaults(options || {}, default_options);
